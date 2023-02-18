@@ -46,3 +46,5 @@ create a hyperlink, and call a builtin function. All macros will ignore extra wh
         * `[^rainbow]Rainbow Text` will return the string with a rainbow foreground color.
 SAIML also follows some inspiration from markdown where `*` means toggle bold and `_` means to toggle underline.
 To reset all attributes, color and formatting, use the empty brackets `[]`.
+
+Check out this [example](https://github.com/Tired-Fox/simll/blob/master/examples/basics.py) for how SAIML can be used
