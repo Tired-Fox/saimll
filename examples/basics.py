@@ -3,7 +3,7 @@ from saimll import SAIML
 # There are include macros that will do cool affects like make the passed text rainbow
 SAIML.print("[^rainbow]Rainbow Text")
 # There is also an included macro for displaying hyperlinks
-SAIML.print("[~https://tired-fox.github.io/SAIMLDecor/teddecor.html]Documentation")
+SAIML.print("[~https://tired-fox.github.io/saimll]Documentation")
 # There is currently also a macro for outputing a string literal
 # For example if you have special escape character and want to print there literals then you can do
 SAIML.print("[^repr]\x1b[0m")
