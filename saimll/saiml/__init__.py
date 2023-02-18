@@ -1,11 +1,11 @@
-"""SIML
+"""SAIML
 
-SIML is the name for the inline markup language for this library. This allows the user to customize strings and prettyprint different information to stdout.
+SAIML is the name for the inline markup language for this library. This allows the user to customize strings and prettyprint different information to stdout.
 
 Includes:
 
 * parse -> returns formatted strings
-* pprint -> parse SIML markup strings and display them to stdout
+* pprint -> parse SAIML markup strings and display them to stdout
 * More to come...
 
 Syntax:
@@ -33,24 +33,23 @@ create a hyperlink, and call a builtin function. All macros will ignore extra wh
             
 3. Builtin functions
     * Builtin functions start with the identifier `^`. The text block following the function will have it's string value passed as a parameter.
-    * You can also specify your own function or override the provided ones by calling SIML.define("Macro Name", Callable)
+    * You can also specify your own function or override the provided ones by calling SAIML.define("Macro Name", Callable)
     * The custom function needs to take a string and return a string. If it does not return a string it will not have an affect.
         * Example:
             ```python
             def hello_world(string: str) → str:
                 return "Hello World"
             
-            SIML.define("hw", hello_world)
-            SIML.print("[^hw]Cat goes moo")
+            SAIML.define("hw", hello_world)
+            SAIML.print("[^hw]Cat goes moo")
             ```
-        * The above example lets SIML know about the function hello_world and says it can be called with `hw`
+        * The above example lets SAIML know about the function hello_world and says it can be called with `hw`
         * Then all that needs to happen is to call it with `[^hw]`
     * Example:
         * `[^rainbow]Rainbow Text` will return the string with a rainbow foreground color.
 
-SIML also follows some inspiration from markdown where `*` means toggle bold and `_` means to toggle underline.
+SAIML also follows some inspiration from markdown where `*` means toggle bold and `_` means to toggle underline.
 To reset all attributes, color and formatting, use the empty brackets `[]`.
 """
-from .markup import SIML
+from .markup import SAIML
 from .color import Color, style
-from .pprint import pprint, p_value

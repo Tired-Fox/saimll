@@ -5,7 +5,7 @@ from typing import Optional, overload
 from re import match
 import colorsys
 
-from simll import SIML
+from saimll.saiml.markup import SAIML
 
 from .xterm_colors import XTERM_COLORS
 
@@ -34,7 +34,7 @@ class ColorBase:
         except Exception as exception:  # pylint: disable=unused-variable,broad-except
             pass
         r, g, b = self.rgb()
-        return SIML.parse(f"[@F {r},{g},{b}]{text}")
+        return SAIML.parse(f"[@F {r},{g},{b}]{text}")
 
     def __str__(self) -> str:
         return self.as_str()

@@ -1,5 +1,5 @@
 from typing import Callable
-from simll.SIML.markup import SIML
+from saimll.saiml.markup import SAIML
 from .colors import Color
 
 COLOR = str | int | tuple | Color
@@ -41,6 +41,7 @@ def style(
     """Stylize a string with foreground and background color, bold, underline, and url
     formatting.
     """
+
     value = " ".join(string)
 
     macro = []
@@ -55,17 +56,19 @@ def style(
 
     # Run through function
     if isinstance(function, str):
-        if function in SIML._funcs:
+        if function in SAIML._funcs:
             macro.append(f"^{function}")
         else:
             raise KeyError(f"{function} is a unkown custom function")
     elif isinstance(function, tuple):
         if len(function) == 2 and isinstance(function[0], str) and callable(function[1]):
-            SIML.define(function[0], function[1])
+            SAIML.define(function[0], function[1])
             macro.append(f"^{function[0]}")
         else:
-            raise TypeError("If you are providing a new custom function it must be a tuple of one \
-str and one Callable")
+            raise TypeError(
+                "If you are providing a new custom function it must be a tuple of one \
+str and one Callable"
+            )
     head = ""
 
     # Bold
@@ -76,7 +79,7 @@ str and one Callable")
     if uline:
         head += "_"
 
-    # Parse with SIML and return
-    return SIML.parse(
-        f"[{' '.join(attr for attr in macro if attr.strip() != '')}]{head}{SIML.escape(value)}"
+    # Parse with SAIML and return
+    return SAIML.parse(
+        f"[{' '.join(attr for attr in macro if attr.strip() != '')}]{head}{SAIML.escape(value)}"
     )

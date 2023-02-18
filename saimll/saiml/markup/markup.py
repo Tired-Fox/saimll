@@ -1,5 +1,5 @@
-"""SIML includes a parser to get literal strings from SIML markup, along with a pprint
-function that outputs the literal string from a SIML markup.
+"""SAIML includes a parser to get literal strings from SAIML markup, along with a pprint
+function that outputs the literal string from a SAIML markup.
 
 Raises:
     MacroMissingError: If there is an incorrect macro or color specifier
@@ -12,11 +12,11 @@ from .tokens import Token, Color, Text, Bold, Underline, Formatter, HLink, Reset
 from .formatting import BOLD, UNDERLINE, RESET, LINK, FUNC
 
 __all__ = [
-    "SIML",
+    "SAIML",
 ]
 
 
-class SIMLParser:
+class SAIMLParser:
     """Main class exposed by the library to give access the markup utility functions."""
 
     def __init__(self) -> None:
@@ -91,7 +91,7 @@ class SIMLParser:
                 previous declerations are removed.
 
         Args:
-            tokens (list): The list of tokens generated from parsing the SIML markup
+            tokens (list): The list of tokens generated from parsing the SAIML markup
 
         Returns:
             list: The optimized list of tokens. Bold, underline, fg, and bg tokens are combined into
@@ -146,12 +146,12 @@ class SIMLParser:
         return output
 
     def __parse_tokens(self, string: str):
-        """Splits the SIML markup string into tokens. If `*` or `_` are found then a Bold or
+        """Splits the SAIML markup string into tokens. If `*` or `_` are found then a Bold or
         Underline token will be generated respectively. If `[` is found then it marches to the end
         of the macro, `]`, and then parses it. All special characters can be escaped with `\\`
 
         Args:
-            text (str): The SIML markup string that will be parsed
+            text (str): The SAIML markup string that will be parsed
 
         Raises:
             MacroError: If a macro is not closed
@@ -257,10 +257,10 @@ class SIMLParser:
         self._funcs.update({name: callback})
 
     def parse(self, text: str) -> str:
-        """Parses a SIML markup string and returns the translated ansi equivilent.
+        """Parses a SAIML markup string and returns the translated ansi equivilent.
 
         Args:
-            text (str): The SIML markup string
+            text (str): The SAIML markup string
 
         Returns:
             str: The ansi translated string
@@ -301,7 +301,7 @@ class SIMLParser:
 
     @staticmethod
     def strip(text: str) -> str:
-        """Removes SIML specific markup.
+        """Removes SAIML specific markup.
 
         Args:
             text (str): String to strip markup from.
@@ -318,4 +318,4 @@ class SIMLParser:
         )
 
 
-SIML = SIMLParser()
+SAIML = SAIMLParser()

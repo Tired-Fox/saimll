@@ -4,7 +4,7 @@ import sys
 from io import StringIO, TextIOWrapper
 from typing import Any, Callable, Optional, TextIO
 
-from simll import SIML
+from saimll import SAIML
 
 from .encoding import encodings
 from .LogLevel import LogLevel
@@ -124,7 +124,7 @@ class Log:
 
         if file is not None:
             for log in self.buffer:
-                file.write(SIML.strip(log))
+                file.write(SAIML.strip(log))
         else:
             for log in self.buffer:
                 self._output.write(log)
@@ -145,7 +145,7 @@ class Log:
         Returns:
             str: The formatted string
         """
-        return f"{spr}".join([SIML.parse(f"[@F {clr}]{arg}[@F] ") for arg in args])
+        return f"{spr}".join([SAIML.parse(f"[@F {clr}]{arg}[@F] ") for arg in args])
 
     def __out(self, *args: str, label: str, clr: Optional[str] = None, gaps: Optional[list[bool]] = None):
         """Base function for formatting a log output.
@@ -177,9 +177,9 @@ class Log:
         message += "\n" if not message.endswith("\n") else ""
         
         if clr is not None:
-            self.buffer.append(SIML.parse(f"*\[[@F{clr}]{label}[@F]\]* ") + message)
+            self.buffer.append(SAIML.parse(f"*\[[@F{clr}]{label}[@F]\]* ") + message)
         else:
-            self.buffer.append(SIML.parse(f"*\[{label}\]* ") + message)
+            self.buffer.append(SAIML.parse(f"*\[{label}\]* ") + message)
 
         if len(gaps) == 2 and gaps[1]:
             self.buffer.append("\n")

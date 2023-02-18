@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "simll"
-version = "0.1.0"
+name = "saimll"
+version = "0.3.0"
 authors = [
     { name="Tired Fox", email="zboehm104@gmail.com"}
 ]
@@ -22,8 +22,8 @@ classifiers = [
 # moph = "mophidian.__main__:cli"
 
 [project.urls]
-"Homepage" = "https://github.com/Tired-Fox/simll"
-"Documentation" = "https://tired-fox.github.io/simll"
+"Homepage" = "https://github.com/Tired-Fox/saimll"
+"Documentation" = "https://tired-fox.github.io/saimll"
 
 [tool.black]
 line-length = 100
