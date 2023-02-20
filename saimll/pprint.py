@@ -1,6 +1,6 @@
 from typing import Any, Callable, Optional
 from types import GenericAlias, UnionType
-from teddecor.TED import TED
+from saimll.saiml import SAIML
 from inspect import getfullargspec, signature, _empty
 
 
@@ -11,6 +11,17 @@ class Missing:
 
 MISSING = Missing()
 
+def ppath(*args: str, clr: str = "yellow", spr: str = " > ") -> str:
+    """Takes all the arguments, segments of path, and combines them with the given seperator and color.
+
+    Args:
+        clr (int): The color to apply to each segment of the path
+        spr (str): The seperator between each segement of the path
+
+    Returns:
+        str: The formatted string
+    """
+    return f"{spr}".join([SAIML.parse(f"[@F {clr}$]{arg.strip()}[@F]") for arg in args])
 
 def pprint(
     *values: Any,
@@ -72,7 +83,7 @@ def p_def(value: Callable, indent: int = 0, decode: bool = True) -> str:
     Args:
         value (bool): The bool to encode.
         indent (int): The amount of spaces added to the prefix of the value.
-        decode (bool): Whether to decode TED markup string to ansi.
+        decode (bool): Whether to decode SAIML markup string to ansi.
 
     Returns:
         `[@F #8aadf4]{value}` == `\\x1b[38;5;147m{value}\\x1b[0m`
@@ -136,14 +147,14 @@ def p_def(value: Callable, indent: int = 0, decode: bool = True) -> str:
 
     val = f"[@F #8aadf4$]{value.__name__}[$@F]({', '.join(args)}){return_annotation}"
     if decode:
-        return TED.parse(val)
+        return SAIML.parse(val)
     return val
 
 
 def p_arg(value: tuple[str, Any, Any], indent: int = 0, decode: bool = True):
     if isinstance(value[1], (GenericAlias, UnionType, str)):
         _type = (
-            f": [@F#f5a97f]{TED.escape(str(value[1]))}[@F]" if not isinstance(value[1], Missing) else ""
+            f": [@F#f5a97f]{SAIML.escape(str(value[1]))}[@F]" if not isinstance(value[1], Missing) else ""
         )
     elif isinstance(value[1], type):
         _type = f": [$]{p_value(value[1], decode=False)}[$]"
@@ -163,7 +174,7 @@ def p_arg(value: tuple[str, Any, Any], indent: int = 0, decode: bool = True):
     val = f"{' '*indent}[@F#f5bde6$]{value[0]}[$@F]{_type}{_default}"
     
     if decode:
-        return TED.parse(val)
+        return SAIML.parse(val)
     return val
 
 
@@ -173,19 +184,19 @@ def p_type(value: bool, indent: int = 0, decode: bool = True) -> str:
     Args:
         value (bool): The bool to encode.
         indent (int): The amount of spaces added to the prefix of the value.
-        decode (bool): Whether to decode TED markup string to ansi.
+        decode (bool): Whether to decode SAIML markup string to ansi.
 
     Returns:
         `[@F #f5a97f]{value}` == `\\x1b[38;5;147m{value}\\x1b[0m`
     """
 
     if isinstance(type(value), type):
-        val = f"[@F #f5a97f]{TED.escape(value.__name__)}[@F]"
+        val = f"[@F #f5a97f]{SAIML.escape(value.__name__)}[@F]"
     else:
-        val = f"[@F #f5a97f]{TED.escape(type(value).__name__)}[@F]"
+        val = f"[@F #f5a97f]{SAIML.escape(type(value).__name__)}[@F]"
 
     if decode:
-        return TED.parse(val)
+        return SAIML.parse(val)
     return val
 
 
@@ -204,7 +215,7 @@ def p_dict(
         indent (int): The amount of spaces added to the prefix of the value. Indent
         is appied to all lines but to the first line of a multiline string. If there
         is only one line the indent is applied to the one line.
-        decode (bool): Whether to decode TED markup string to ansi.
+        decode (bool): Whether to decode SAIML markup string to ansi.
 
     Returns:
         `[@F 210]None` == `\\x1b[38;5;210mNone\\x1b[0m`
@@ -246,7 +257,7 @@ def p_dict(
             val = open_bracket + close_bracket
 
     if decode:
-        return TED.parse(val)
+        return SAIML.parse(val)
     return val
 
 
@@ -255,7 +266,7 @@ def p_none(indent: int = 0, decode: bool = True) -> str:
 
     Args:
         indent (int): The amount of spaces added to the prefix of the value.
-        decode (bool): Whether to decode TED markup string to ansi.
+        decode (bool): Whether to decode SAIML markup string to ansi.
 
     Returns:
         `[@F 147]None` or `\\x1b[38;5;147mNone\\x1b[0m`
@@ -263,7 +274,7 @@ def p_none(indent: int = 0, decode: bool = True) -> str:
 
     val = "[@F 147]None[@F]"
     if decode:
-        return TED.parse(val)
+        return SAIML.parse(val)
     return val
 
 
@@ -273,7 +284,7 @@ def p_num(num: int | float, indent: int = 0, decode: bool = True) -> str:
     Args:
         num (int): The number to encode.
         indent (int): The amount of spaces added to the prefix of the value.
-        decode (bool): Whether to decode TED markup string to ansi.
+        decode (bool): Whether to decode SAIML markup string to ansi.
 
     Returns:
         `[@F yellow]{num}` == `\\x1b[33m{num}\\x1b[0m`
@@ -281,7 +292,7 @@ def p_num(num: int | float, indent: int = 0, decode: bool = True) -> str:
 
     val = f"[@F yellow]{num}[@F]"
     if decode:
-        return TED.parse(val)
+        return SAIML.parse(val)
     return val
 
 
@@ -291,7 +302,7 @@ def p_bool(value: bool, indent: int = 0, decode: bool = True) -> str:
     Args:
         value (bool): The bool to encode.
         indent (int): The amount of spaces added to the prefix of the value.
-        decode (bool): Whether to decode TED markup string to ansi.
+        decode (bool): Whether to decode SAIML markup string to ansi.
 
     Returns:
         `[@F 147]{value}` == `\\x1b[38;5;147m{value}\\x1b[0m`
@@ -299,7 +310,7 @@ def p_bool(value: bool, indent: int = 0, decode: bool = True) -> str:
 
     val = f"[@F 147]{value}[@F]"
     if decode:
-        return TED.parse(val)
+        return SAIML.parse(val)
     return val
 
 
@@ -309,7 +320,7 @@ def p_str(string: str, indent: int = 0, decode: bool = True) -> str:
     Args:
         string (str): The string to encode.
         indent (int): The amount of spaces added to the prefix of the value.
-        decode (bool): Whether to decode TED markup string to ansi.
+        decode (bool): Whether to decode SAIML markup string to ansi.
 
     Example:
         `The \\n cat` == `\\x1b[32m'The \\n cat'\\x1b[0m`
@@ -319,7 +330,7 @@ def p_str(string: str, indent: int = 0, decode: bool = True) -> str:
     """
     from re import sub
 
-    string = TED.escape(repr(string))
+    string = SAIML.escape(repr(string))
 
     # Color special characters
     string = sub(
@@ -330,7 +341,7 @@ def p_str(string: str, indent: int = 0, decode: bool = True) -> str:
 
     val = f"[@F green]{string}[@F]"
     if decode:
-        return TED.parse(val)
+        return SAIML.parse(val)
     return val
 
 
@@ -340,7 +351,7 @@ def p_symbol(sym: str, indent: int = 0, decode: bool = True) -> str:
     Args:
         sym (str): The symbol to encode.
         indent (int): The amount of spaces added to the prefix of the value.
-        decode (bool): Whether to decode TED markup string to ansi.
+        decode (bool): Whether to decode SAIML markup string to ansi.
 
     Example:
         `{` == `\\x1b[1m{\\x1b[0m`
@@ -349,9 +360,9 @@ def p_symbol(sym: str, indent: int = 0, decode: bool = True) -> str:
         `*{symbol}*` == `\\x1b[1mNone\\x1b[0m`
     """
 
-    val = f"*{TED.escape(sym)}*"
+    val = f"*{SAIML.escape(sym)}*"
     if decode:
-        return TED.parse(val)
+        return SAIML.parse(val)
     return val
 
 
@@ -369,7 +380,7 @@ def p_collection(
         indent (int): The amount of spaces added to the prefix of the value. Indent
         is appied to all lines but to the first line of a multiline string. If there
         is only one line the indent is applied to the one line.
-        decode (bool): Whether to decode TED markup string to ansi.
+        decode (bool): Whether to decode SAIML markup string to ansi.
 
     Example:
         `{` == `\\x1b[1m{\\x1b[0m`
@@ -416,5 +427,5 @@ def p_collection(
             val = open_bracket + close_bracket
 
     if decode:
-        return TED.parse(val)
+        return SAIML.parse(val)
     return val
