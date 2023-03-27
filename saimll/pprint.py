@@ -11,6 +11,11 @@ class Missing:
 
 MISSING = Missing()
 
+def _type(val: Any) -> type:
+    if isinstance(val, type):
+        return val
+    return type(val)
+
 def ppath(*args: str, clr: str = "yellow", spr: str = " > ") -> str:
     """Takes all the arguments, segments of path, and combines them with the given seperator and color.
 
@@ -178,7 +183,7 @@ def p_arg(value: tuple[str, Any, Any], indent: int = 0, decode: bool = True):
     return val
 
 
-def p_type(value: bool, indent: int = 0, decode: bool = True) -> str:
+def p_type(value: type, indent: int = 0, decode: bool = True) -> str:
     """Construct an ansi encoded colored bool str.
 
     Args:
@@ -190,10 +195,15 @@ def p_type(value: bool, indent: int = 0, decode: bool = True) -> str:
         `[@F #f5a97f]{value}` == `\\x1b[38;5;147m{value}\\x1b[0m`
     """
 
-    if isinstance(type(value), type):
-        val = f"[@F #f5a97f]{SAIML.escape(value.__name__)}[@F]"
+    if isinstance(value, type):
+        val = f"[@F #f5a97f]{SAIML.escape(_type(value).__name__)}[@F]"
     else:
-        val = f"[@F #f5a97f]{SAIML.escape(type(value).__name__)}[@F]"
+        if hasattr(value, "__repr__"):
+            val = repr(value)
+        elif hasattr(value, "__str__"):
+            val = str(value)
+        else:
+            val = f"[@F #f5a97f]{SAIML.escape(type(value).__name__)}[@F]"
 
     if decode:
         return SAIML.parse(val)
