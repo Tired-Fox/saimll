@@ -16,7 +16,7 @@ def _type(val: Any) -> type:
         return val
     return type(val)
 
-def ppath(*args: str, clr: str = "yellow", spr: str = " > ") -> str:
+def ppath(*args: str, clr: str = "\x1b[33m", spr: str = " > ") -> str:
     """Takes all the arguments, segments of path, and combines them with the given seperator and color.
 
     Args:
@@ -26,7 +26,8 @@ def ppath(*args: str, clr: str = "yellow", spr: str = " > ") -> str:
     Returns:
         str: The formatted string
     """
-    return f"{spr}".join([SAIML.parse(f"[@F {clr}$]{arg.strip()}[@F]") for arg in args])
+    path = f"{spr}".join([f"{clr}{arg.strip()}\x1b[39m" for arg in args])
+    return path
 
 def pprint(
     *values: Any,
@@ -72,7 +73,7 @@ def p_value(
     if isinstance(value, dict):
         return p_dict(value, depth=depth, indent=indent, decode=decode, leading=leading)
 
-    if isinstance(value, Callable) and not isinstance(value, type):
+    if callable(value) and value.__module__ not in ["builtins", "_sitebuiltins"] and not isinstance(value, type):
         if handler is not None:
             return handler(value, depth, indent, decode, leading)
         return p_def(value, indent=indent, decode=decode)
@@ -109,54 +110,58 @@ def p_def(value: Callable, indent: int = 0, decode: bool = True) -> str:
                         styled_args[i][1] = annotations[arg[0]]
 
         return styled_args
+    try:
+        (
+            args,
+            varargs,
+            varkw,
+            defaults,
+            kwonlyargs,
+            kwonlydefaults,
+            annotations,
+        ) = getfullargspec(value)
 
-    (
-        args,
-        varargs,
-        varkw,
-        defaults,
-        kwonlyargs,
-        kwonlydefaults,
-        annotations,
-    ) = getfullargspec(value)
-    styled_args = build_arg_data(args, defaults, annotations)
-    styled_args.extend(build_arg_data(kwonlyargs, kwonlydefaults, annotations))
+        styled_args = build_arg_data(args, defaults, annotations)
+        styled_args.extend(build_arg_data(kwonlyargs, kwonlydefaults, annotations))
 
-    if varargs is not None:
-        styled_args.append(
-            [
-                f"*{varargs}",
-                annotations[varargs] if varargs in annotations else MISSING,
-                MISSING,
-            ]
-        )
+        if varargs is not None:
+            styled_args.append(
+                [
+                    f"*{varargs}",
+                    annotations[varargs] if varargs in annotations else MISSING,
+                    MISSING,
+                ]
+            )
 
-    if varkw is not None:
-        styled_args.append(
-            [
-                f"**{varkw}",
-                annotations[varkw] if varkw in annotations else MISSING,
-                MISSING,
-            ]
-        )
+        if varkw is not None:
+            styled_args.append(
+                [
+                    f"**{varkw}",
+                    annotations[varkw] if varkw in annotations else MISSING,
+                    MISSING,
+                ]
+            )
 
-    args = []
-    for arg in styled_args:
-        args.append(p_arg(arg, decode=False))
+        args = []
+        for arg in styled_args:
+            args.append(p_arg(arg, decode=False))
 
-    return_annotation = signature(value).return_annotation
-    if return_annotation == _empty:
-        return_annotation = f" -> {p_none(decode=False)}"
-    else:
-        return_annotation = f" -> {p_value(return_annotation, decode=False)}"
+        return_annotation = signature(value).return_annotation
+        if return_annotation == _empty:
+            return_annotation = f" -> {p_none(decode=False)}"
+        else:
+            return_annotation = f" -> {p_value(return_annotation, decode=False)}"
 
-    val = f"[@F #8aadf4$]{value.__name__}[$@F]({', '.join(args)}){return_annotation}"
+        val = f"[@F #8aadf4$]{value.__name__}[$@F]({', '.join(args)}){return_annotation}"
+    except:
+        val = f"[@F red]{_type(value).__name__}()[@F]"
     if decode:
         return SAIML.parse(val)
     return val
 
 
 def p_arg(value: tuple[str, Any, Any], indent: int = 0, decode: bool = True):
+    _type = ""
     if isinstance(value[1], (GenericAlias, UnionType, str)):
         _type = (
             f": [@F#f5a97f]{SAIML.escape(str(value[1]))}[@F]" if not isinstance(value[1], Missing) else ""
@@ -196,14 +201,14 @@ def p_type(value: type, indent: int = 0, decode: bool = True) -> str:
     """
 
     if isinstance(value, type):
-        val = f"[@F #f5a97f]{SAIML.escape(_type(value).__name__)}[@F]"
+        val = f"[@F #f5a97f $]{SAIML.escape(_type(value).__name__)}[@F $]"
     else:
         if hasattr(value, "__repr__"):
-            val = repr(value)
+            val = f"[$]{value!r}[$]"
         elif hasattr(value, "__str__"):
-            val = str(value)
+            val = f"[$]{value}[$]"
         else:
-            val = f"[@F #f5a97f]{SAIML.escape(type(value).__name__)}[@F]"
+            val = f"[@F #f5a97f $]{SAIML.escape(type(value).__name__)}[@F $]"
 
     if decode:
         return SAIML.parse(val)
