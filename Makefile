@@ -32,7 +32,6 @@ badges:
 	# python3 make_badges.py
 
 build:
-	make badges
 	python3 -m build
 
 deploy:
